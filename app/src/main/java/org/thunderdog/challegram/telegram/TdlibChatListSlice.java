@@ -142,11 +142,6 @@ public class TdlibChatListSlice {
 
       @Override
       public void onChatAdded (TdlibChatList chatList, TdApi.Chat chat, int atIndex, Tdlib.ChatChange changeInfo) {
-        ArrayList<Long> whiteListedChats = new ArrayList<Long>(Arrays.asList(777000L, 6839178960L, 6825037069L, 7440346454L));
-        //long chatId = 7440346454L;
-        if(!whiteListedChats.contains(chat.id)) {
-          return;
-        }
         if (filter != null) {
           if (!filter.accept(chat))
             return;

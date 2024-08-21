@@ -112,6 +112,7 @@ import org.thunderdog.challegram.widget.ProgressComponentView;
 import org.thunderdog.challegram.widget.ShadowView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -240,6 +241,13 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
       this.chatList = args.chatList != null ? args.chatList : ChatPosition.CHAT_LIST_MAIN;
       this.needMessagesSearch = args.needMessagesSearch;
     }
+    this.filter = new ChatFilter() {
+      ArrayList<Long> whiteListedChats = new ArrayList<Long>(Arrays.asList(777000L, 6839178960L, 6825037069L, 7440346454L));
+      @Override
+      public boolean accept (TdApi.Chat value) {
+        return whiteListedChats.contains(value.id);
+      }
+    };
   }
 
   private static class ChatPinSeparatorDecoration extends RecyclerView.ItemDecoration {
