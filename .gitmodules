@@ -15,6 +15,7 @@
 [submodule "ffmpeg"]
 	path = app/jni/third_party/ffmpeg
 	url = https://github.com/FFmpeg/FFmpeg
+	ignore = dirty
 	shallow = true
 	branch = release/6.1
 [submodule "lz4"]
@@ -33,6 +34,7 @@
 [submodule "opus"]
 	path = app/jni/third_party/opus
 	url = https://github.com/xiph/opus
+	ignore = dirty
 	shallow = true
 [submodule "opusfile"]
 	path = app/jni/third_party/opusfile
@@ -45,6 +47,7 @@
 [submodule "libvpx"]
 	path = app/jni/third_party/libvpx
 	url = https://github.com/webmproject/libvpx
+	ignore = dirty
 	shallow = true
 [submodule "tdlib"]
 	path = tdlib
