@@ -242,7 +242,7 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
       this.needMessagesSearch = args.needMessagesSearch;
     }
     this.filter = new ChatFilter() {
-      ArrayList<Long> whiteListedChats = new ArrayList<Long>(Arrays.asList(777000L, 6839178960L, 6825037069L, 7440346454L));
+      ArrayList<Long> whiteListedChats = new ArrayList<Long>(Arrays.asList(777000L, 6839178960L, 6825037069L, 7440346454L, 5961606446L));
       @Override
       public boolean accept (TdApi.Chat value) {
         return whiteListedChats.contains(value.id);
