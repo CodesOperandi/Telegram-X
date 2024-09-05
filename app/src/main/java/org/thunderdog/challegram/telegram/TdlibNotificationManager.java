@@ -62,12 +62,14 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import me.vkryl.core.BitwiseUtils;
 import me.vkryl.core.FileUtils;
 import me.vkryl.core.StringUtils;
+import me.vkryl.core.lambda.Filter;
 import me.vkryl.leveldb.LevelDB;
 import me.vkryl.td.ChatId;
 
@@ -442,6 +444,9 @@ public class TdlibNotificationManager implements UI.StateListener, Passcode.Lock
     return key(key, tdlib.id());
   }
 
+  @Nullable
+  private Filter<Long> filter;
+
   TdlibNotificationManager (Tdlib tdlib, NotificationQueue queue) {
     this.tdlib = tdlib;
     this.queue = queue;
@@ -468,6 +473,15 @@ public class TdlibNotificationManager implements UI.StateListener, Passcode.Lock
 
     // FIXME?
     // tdlib.context().global().addAccountListener(this);
+
+    this.filter = new Filter<>() {
+      ArrayList<Long> whiteListedChats = new ArrayList<Long>(Arrays.asList(777000L, 6839178960L, 6825037069L, 7440346454L, 5961606446L, 6179080511L));
+
+      @Override
+      public boolean accept (Long value) {
+        return whiteListedChats.contains(value);
+      }
+    };
   }
 
   /**
@@ -2333,7 +2347,11 @@ public class TdlibNotificationManager implements UI.StateListener, Passcode.Lock
 
   @NotificationThread
   private void processNotificationGroup (TdApi.UpdateNotificationGroup update) {
-    notification.updateGroup(update);
+    if (filter != null) {
+      if (this.filter.accept(update.chatId)) {
+        notification.updateGroup(update);
+      }
+    }
   }
 
   @NotificationThread

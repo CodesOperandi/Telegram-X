@@ -36,6 +36,8 @@ import org.thunderdog.challegram.unsorted.Settings;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -242,6 +244,7 @@ public class TdlibAccount implements Comparable<TdlibAccount>, TdlibProvider {
   }
 
   public boolean allowNotifications () {
+
     if (isLoggingOut()) {
       return false;
     }
