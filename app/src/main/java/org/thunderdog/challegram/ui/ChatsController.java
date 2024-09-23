@@ -110,6 +110,7 @@ import org.thunderdog.challegram.widget.ForceTouchView;
 import org.thunderdog.challegram.widget.JoinedUsersView;
 import org.thunderdog.challegram.widget.ProgressComponentView;
 import org.thunderdog.challegram.widget.ShadowView;
+import org.xorworks.UserWhitelist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,6 +147,7 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
   ForceTouchView.PreviewDelegate, LiveLocationHelper.Callback,
   BaseView.LongPressInterceptor, TdlibCache.UserStatusChangeListener,
   Settings.ChatListModeChangeListener, CounterChangeListener,
+  UserWhitelist.OnWhitelistUpdateListener,
   TdlibSettingsManager.PreferenceChangeListener, SelectDelegate, MoreDelegate, DateChangeListener, ChatFolderListener {
 
   private static final int NO_CHAT_FOLDER_ID = 0;
@@ -177,6 +179,9 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
 
   public ChatsController (Context context, Tdlib tdlib) {
     super(context, tdlib);
+    // Initialize UserWhitelist
+    userWhitelist = UserWhitelist.getInstance(context);
+    userWhitelist.setOnWhitelistUpdateListener(this);
   }
 
   private MainController parentController;
@@ -224,6 +229,8 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
 
   private boolean needMessagesSearch;
 
+  private UserWhitelist userWhitelist;
+
   @Override
   public void setArguments (Arguments args) {
     super.setArguments(args);
@@ -241,14 +248,63 @@ public class ChatsController extends TelegramViewController<ChatsController.Argu
       this.chatList = args.chatList != null ? args.chatList : ChatPosition.CHAT_LIST_MAIN;
       this.needMessagesSearch = args.needMessagesSearch;
     }
+    // Initialize filter with current whitelist
     this.filter = new ChatFilter() {
-      ArrayList<Long> whiteListedChats = new ArrayList<Long>(Arrays.asList(777000L, 6839178960L, 6825037069L, 7440346454L, 5961606446L, 6179080511L));
       @Override
-      public boolean accept (TdApi.Chat value) {
-        return whiteListedChats.contains(value.id);
+      public boolean accept(TdApi.Chat value) {
+        return userWhitelist.getWhitelist().contains(value.id);
       }
     };
+    String currentUserId = getCurrentUserId(); // Implement this method as per your app's logic
+    userWhitelist.fetchWhitelist(currentUserId);
   }
+  /**
+   * Example method to get the current user's ID.
+   * Replace this with your actual implementation.
+   *
+   * @return The current user's ID as a string.
+   */
+  private String getCurrentUserId() {
+    // Example: Retrieve the current user's ID from the Tdlib instance or user session
+    // Replace this with your actual method to get the current user's ID
+    TdApi.User currentUser = tdlib.getCurrentUser(); // Hypothetical method
+    return currentUser != null ? String.valueOf(currentUser.id) : null;
+  }
+
+  /**
+   * Callback when the whitelist is successfully updated.
+   *
+   * @param newWhitelist The updated whitelist.
+   */
+  @Override
+  public void onWhitelistUpdated(List<Long> newWhitelist) {
+    // Update the filter and refresh the chat list
+    if (filter != null) {
+      filter = new ChatFilter() {
+        @Override
+        public boolean accept(TdApi.Chat value) {
+          return userWhitelist.getWhitelist().contains(value.id);
+        }
+      };
+      // Notify the adapter to refresh
+      if (adapter != null) {
+        adapter.notifyDataSetChanged();
+      }
+    }
+  }
+
+  /**
+   * Callback when the whitelist update fails.
+   *
+   * @param e The exception that occurred.
+   */
+  @Override
+  public void onWhitelistUpdateFailed(Exception e) {
+    // Handle the error (e.g., show a message to the user)
+    // You can log the error or show a toast
+    e.printStackTrace();
+  }
+
 
   private static class ChatPinSeparatorDecoration extends RecyclerView.ItemDecoration {
     private final ChatsController context;

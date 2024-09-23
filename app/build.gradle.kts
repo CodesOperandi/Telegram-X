@@ -401,6 +401,8 @@ dependencies {
   implementation("com.google.android.gms:play-services-location:18.0.0")
   implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:16.2.1")
   implementation("com.google.android.gms:play-services-safetynet:18.0.1")
+  implementation("com.squareup.okhttp3:okhttp:4.9.3")
+  implementation("org.json:json:20220320")
   // Firebase: https://firebase.google.com/support/release-notes/android
   implementation("com.google.firebase:firebase-messaging:22.0.0") {
     exclude(group = "com.google.firebase", module = "firebase-core")
